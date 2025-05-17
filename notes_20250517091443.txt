@@ -1,0 +1,35 @@
+05.17 9:11 AM
+# Install dependencies if not already installed
+# !pip install transformers torch
+
+from transformers import AutoTokenizer, AutoModelForTokenClassification
+from transformers import pipeline
+
+def main():
+    # Load a pre-trained BERT model fine-tuned for NER (CoNLL-2003)
+    model_name = "dbmdz/bert-large-cased-finetuned-conll03-english"
+
+    print("Loading model and tokenizer...")
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForTokenClassification.from_pretrained(model_name)
+
+    # Create a pipeline for Named Entity Recognition
+    nlp_ner = pipeline("ner", model=model, tokenizer=tokenizer, aggregation_strategy="simple")
+
+    # Sample text to analyze
+    text = "Apple is looking at buying U.K. startup for $1 billion. Steve Jobs founded Apple."
+
+    print("\nInput text:")
+    print(text)
+
+    print("\nNamed Entities:")
+    ner_results = nlp_ner(text)
+
+    for entity in ner_results:
+        word = entity['word']
+        label = entity['entity_group']
+        score = entity['score']
+        print(f"{word}: {label} (confidence: {score:.2f})")
+
+if __name__== "__main__":
+    main()
